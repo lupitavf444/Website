@@ -11,18 +11,12 @@ let labels = [
   'Step 10: Distribute Your Zine'
 ];
 
-let labels2 = [...labels]; // initial dummy data
-let text_rect = [];
-
+let labels2 = [...labels];
 let rectangles = [];
 let draggingRect = null;
 let offsetX, offsetY;
-let itemCounter = 0;
 
-let labels_hold = [];
-let heldRectangles = [];
-
-let buttonX = 100, buttonY = 260 + 200, buttonW = 200, buttonH = 50;
+let buttonX = 100, buttonY = 460, buttonW = 200, buttonH = 50;
 
 let myFont;
 let colors = ['#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff', '#eecbff', '#dbdcff'];
@@ -30,10 +24,8 @@ let lastClickTime = 0;
 let doubleClickThreshold = 300;
 
 let bgImg, typewriterImg;
-
 let mainTheme = [];
 let words = [];
-
 let inputBox, inputBox2;
 let sendButton, sendButton2;
 
@@ -45,7 +37,21 @@ function preload() {
 
 function setup() {
   createCanvas(1700, 3250);
-
+  
+  let indText = createP("What is your essay about?");
+  indText.position(480, 260); // Position above the input box
+  indText.style('font-family', 'Courier Prime');
+  indText.style('font-size', '16px');
+  indText.style('color', 'black'); // Change text color if needed
+  indText.style('margin', '0'); // Remove default paragraph margin
+  
+  let indText2 = createP("How many words?:");
+  indText2.position(1080, 260); // Position above the input box
+  indText2.style('font-family', 'Courier Prime');
+  indText2.style('font-size', '16px');
+  indText2.style('color', 'black'); // Change text color if needed
+  indText2.style('white-space', 'nowrap');
+  indText2.style('margin', '0'); // Remove default paragraph margin
 
   inputBox = createInput();
   inputBox.position(450, 300);
@@ -56,20 +62,22 @@ function setup() {
   inputBox.style('background-color', 'rgba(212, 185, 94)');
   inputBox.input(updatePrompt);
   inputBox.style('font-family', 'Courier Prime');
-  
 
   sendButton = createButton('Send');
-  sendButton.position(inputBox.x + inputBox.width -80, inputBox.y + 35);
+  sendButton.position(inputBox.x + inputBox.width - 80, inputBox.y + 35);
   sendButton.style('font-family', 'Courier Prime');
-  sendButton.style('font-size', '18px');       
-  sendButton.style('background-color', 'black'); 
-  sendButton.style('color', 'white');         
+  sendButton.style('font-size', '18px');
+  sendButton.style('background-color', 'black');
+  sendButton.style('color', 'white');
   sendButton.style('padding', '8px 16px');
   sendButton.style('border-radius', '8px');
   sendButton.mousePressed(logPrompt);
+  
+  
+
 
   inputBox2 = createInput();
-  inputBox2.position(inputBox.x + 600,inputBox.y);
+  inputBox2.position(inputBox.x + 600, inputBox.y);
   inputBox2.size(220, 100);
   inputBox2.style('height', '100px');
   inputBox2.style('border-radius', '12px');
@@ -78,21 +86,19 @@ function setup() {
   inputBox2.input(updateWords);
   inputBox2.style('font-family', 'Courier Prime');
 
-
   sendButton2 = createButton('Send');
-  sendButton2.position(inputBox2.x + inputBox2.width -80, inputBox2.y + 35);
+  sendButton2.position(inputBox2.x + inputBox2.width - 80, inputBox2.y + 35);
   sendButton2.mousePressed(logWords);
   sendButton2.style('font-family', 'Courier Prime');
-  sendButton2.style('font-size', '18px');       
-  sendButton2.style('background-color', 'black'); 
-  sendButton2.style('color', 'white');         
+  sendButton2.style('font-size', '18px');
+  sendButton2.style('background-color', 'black');
+  sendButton2.style('color', 'white');
   sendButton2.style('padding', '8px 16px');
   sendButton2.style('border-radius', '8px');
 
   for (let i = 0; i < labels.length; i++) {
     rectangles.push(new DraggableRect(50, 350 + i * 80 + 200, 250, 70, labels[i], labels2[i], i));
   }
-  itemCounter = labels.length;
 }
 
 function draw() {
@@ -104,39 +110,15 @@ function draw() {
   textAlign(CENTER, TOP);
   text("ESSAY WRITER", width / 2, 60);
   textSize(24);
-image(typewriterImg, 200, 40, 250, 180);
+  image(typewriterImg, 200, 40, 250, 180);
 
-  fill(157,174,17);
+  fill(157, 174, 17);
   rect(buttonX, buttonY, buttonW, buttonH, 5);
   fill(0);
   textAlign(CENTER, CENTER);
   text('Add Item', buttonX + buttonW / 2, buttonY + buttonH / 2);
 
-  let holdX = 1200;
-  let holdY = 400 + 200;
-  let holdWidth = width - holdX;
-  let holdHeight = 400;
-  fill(210, 143, 51);
-  rect(holdX, holdY, holdWidth, holdHeight);
-  fill(0);
-  textAlign(CENTER, CENTER);
-  text("HOLD AREA", holdX + holdWidth / 2, holdY + holdHeight / 2);
-
-  let rectX = 1200;
-  let rectY = 800 + 200;
-  let rectWidth = width - rectX;
-  let rectHeight = 150;
-  fill(179, 66, 51);
-  rect(rectX, rectY, rectWidth, rectHeight);
-  fill(255);
-  text("DELETION AREA", rectX + rectWidth / 2, rectY + rectHeight / 2);
-
   for (let rect of rectangles) {
-    rect.update();
-    rect.show();
-  }
-
-  for (let rect of heldRectangles) {
     rect.update();
     rect.show();
   }
@@ -148,7 +130,7 @@ function mousePressed() {
   let clickedOnRect = false;
   let currentTime = millis();
 
-  for (let rect of rectangles.concat(heldRectangles)) {
+  for (let rect of rectangles) {
     if (rect.isMouseOver()) {
       if (currentTime - lastClickTime < doubleClickThreshold) {
         let newLabel = prompt("Edit the label:", rect.label);
@@ -181,62 +163,18 @@ function mousePressed() {
 }
 
 function mouseReleased() {
-  if (draggingRect) {
-    let isInHoldArea = draggingRect.x > 400 && draggingRect.y > (400 + 200) && draggingRect.y < (800 + 200);
-    let isInDeletionArea = draggingRect.x > 400 && draggingRect.y > (800 + 200) && draggingRect.y < (950 + 200);
-
-    if (isInHoldArea) {
-      let index = rectangles.indexOf(draggingRect);
-      if (index !== -1) {
-        labels_hold.push(draggingRect.label);
-        labels.splice(index, 1);
-        labels2.splice(index, 1);
-        draggingRect.x = 1200;
-        draggingRect.y = 400 + 200 + heldRectangles.length * 80;
-        heldRectangles.push(draggingRect);
-        rectangles.splice(index, 1);
-      }
-    } else if (isInDeletionArea) {
-      let index = rectangles.indexOf(draggingRect);
-      if (index !== -1) {
-        rectangles.splice(index, 1);
-        labels.splice(index, 1);
-        labels2.splice(index, 1);
-      }
-    } else if (draggingRect.x < 400) {
-      if (heldRectangles.includes(draggingRect)) {
-        let holdIndex = labels_hold.indexOf(draggingRect.label);
-        if (holdIndex !== -1) {
-          let newRect = new DraggableRect(mouseX, mouseY, 250, 70, labels_hold[holdIndex], labels_hold[holdIndex], labels.length);
-          rectangles.push(newRect);
-          labels.push(labels_hold[holdIndex]);
-          labels2.push(labels_hold[holdIndex]);
-          labels_hold.splice(holdIndex, 1);
-          heldRectangles.splice(heldRectangles.indexOf(draggingRect), 1);
-        }
-      }
-      
-    } else { 
-  // Snap it back to the main column's x position
-  draggingRect.x = 50; // <-- Same x as other rectangles
-}
-
-    draggingRect = null;
-  }
-
+  draggingRect = null;
   reorderRectangles();
 }
 
 function isButtonClicked() {
   return mouseX > buttonX && mouseX < buttonX + buttonW &&
-    mouseY > buttonY && mouseY < buttonY + buttonH;
+         mouseY > buttonY && mouseY < buttonY + buttonH;
 }
 
 function reorderRectangles() {
   if (draggingRect) return;
-
   rectangles.sort((a, b) => a.y - b.y);
-
   for (let i = 0; i < rectangles.length; i++) {
     rectangles[i].y = 350 + i * 200 + 200;
     labels[i] = rectangles[i].label;
@@ -255,14 +193,13 @@ class DraggableRect {
     this.label2 = label2;
     this.color = random(colors);
     this.index = index;
-    
 
     this.input1 = createInput(this.label);
     this.input1.position(this.x, this.y);
     this.input1.size(300, this.h);
     this.input1.style('font-family', 'Courier Prime');
     this.input1.style('background-color', 'rgb(245, 237, 214)');
-this.input1.style('border-radius', '10px');
+    this.input1.style('border-radius', '10px');
     this.input1.input(() => {
       this.label = this.input1.value();
       labels[this.index] = this.label;
@@ -273,7 +210,7 @@ this.input1.style('border-radius', '10px');
     this.input2.size(500, this.h + 100);
     this.input2.style('font-family', 'Courier Prime');
     this.input2.style('background-color', 'rgb(245, 237, 214)');
-this.input2.style('border-radius', '10px');
+    this.input2.style('border-radius', '10px');
     this.input2.input(() => {
       this.label2 = this.input2.value();
       labels2[this.index] = this.label2;
@@ -282,7 +219,6 @@ this.input2.style('border-radius', '10px');
 
   update() {
     if (draggingRect === this) {
-      this.x = mouseX - offsetX;
       this.y = mouseY - offsetY;
     }
     this.input1.position(this.x, this.y);
@@ -296,29 +232,8 @@ this.input2.style('border-radius', '10px');
 
   isMouseOver() {
     return mouseX > this.x && mouseX < this.x + this.w &&
-      mouseY > this.y && mouseY < this.y + this.h;
+           mouseY > this.y && mouseY < this.y + this.h;
   }
-}
-
-function splitTextIntoLines(text, maxLength) {
-  let lines = [];
-  let words = text.split(' ');
-  let currentLine = '';
-
-  for (let word of words) {
-    if (currentLine.length + word.length + 1 <= maxLength) {
-      currentLine += (currentLine ? ' ' : '') + word;
-    } else {
-      lines.push(currentLine);
-      currentLine = word;
-    }
-  }
-
-  if (currentLine.length > 0) {
-    lines.push(currentLine);
-  }
-
-  return lines;
 }
 
 function updatePrompt() {
