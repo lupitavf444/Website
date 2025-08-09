@@ -25,7 +25,7 @@ let colors = ['#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff', '#eecbff', 
 let lastClickTime = 0;
 let doubleClickThreshold = 300;
 
-let bgImg, typewriterImg;
+let bgImg, typewriterImg, taskant;
 let mainTheme = [];
 let words = [];
 let inputBox, inputBox2;
@@ -36,6 +36,7 @@ function preload() {
   myFont = loadFont('Website/typewcond_bold.otf');
   bgImg = loadImage('Website/background.png');
   typewriterImg = loadImage('Website/typewriter.png');
+  taskantImg = loadImage('Website/taskant.png');
 }
 
 function setup() {
@@ -133,6 +134,7 @@ function draw() {
   text("ESSAY WRITER", width / 2, 60);
   textSize(24);
   image(typewriterImg, 200, 40, 250, 180);
+  image(taskantImg, 1300, 40, 250, 200);
 
   fill(157, 174, 17);
   rect(buttonX, buttonY, buttonW, buttonH, 5);
