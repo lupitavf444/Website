@@ -18,7 +18,6 @@ let offsetX, offsetY;
 
 let buttonX = 100, buttonY = 460, buttonW = 200, buttonH = 50;
 
-let myFont;
 let colors = ['#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff', '#eecbff', '#dbdcff'];
 let lastClickTime = 0;
 let doubleClickThreshold = 300;
@@ -37,21 +36,21 @@ function preload() {
 
 function setup() {
   createCanvas(1700, 3250);
-  
+
   let indText = createP("What is your essay about?");
-  indText.position(480, 260); // Position above the input box
+  indText.position(480, 260);
   indText.style('font-family', 'Courier Prime');
   indText.style('font-size', '16px');
-  indText.style('color', 'black'); // Change text color if needed
-  indText.style('margin', '0'); // Remove default paragraph margin
-  
+  indText.style('color', 'black');
+  indText.style('margin', '0');
+
   let indText2 = createP("How many words?:");
-  indText2.position(1080, 260); // Position above the input box
+  indText2.position(1080, 260);
   indText2.style('font-family', 'Courier Prime');
   indText2.style('font-size', '16px');
-  indText2.style('color', 'black'); // Change text color if needed
+  indText2.style('color', 'black');
   indText2.style('white-space', 'nowrap');
-  indText2.style('margin', '0'); // Remove default paragraph margin
+  indText2.style('margin', '0');
 
   inputBox = createInput();
   inputBox.position(450, 300);
@@ -72,9 +71,6 @@ function setup() {
   sendButton.style('padding', '8px 16px');
   sendButton.style('border-radius', '8px');
   sendButton.mousePressed(logPrompt);
-  
-  
-
 
   inputBox2 = createInput();
   inputBox2.position(inputBox.x + 600, inputBox.y);
@@ -97,7 +93,7 @@ function setup() {
   sendButton2.style('border-radius', '8px');
 
   for (let i = 0; i < labels.length; i++) {
-    rectangles.push(new DraggableRect(50, 350 + i * 80 + 200, 250, 70, labels[i], labels2[i], i));
+    rectangles.push(new DraggableRect(50, 350 + i * 200 + 200, 250, 70, labels[i], labels2[i], i));
   }
 }
 
@@ -152,7 +148,7 @@ function mousePressed() {
   if (!clickedOnRect && isButtonClicked()) {
     let newLabel = prompt("Enter the label for the new item:");
     if (newLabel && newLabel.trim() !== "") {
-      let newRect = new DraggableRect(50, 350 + rectangles.length * 80 + 200, 250, 70, newLabel.trim(), newLabel.trim(), labels.length);
+      let newRect = new DraggableRect(50, 350 + rectangles.length * 200 + 200, 250, 70, newLabel.trim(), newLabel.trim(), labels.length);
       rectangles.push(newRect);
       labels.push(newLabel.trim());
       labels2.push(newLabel.trim());
@@ -194,6 +190,7 @@ class DraggableRect {
     this.color = random(colors);
     this.index = index;
 
+    // First input
     this.input1 = createInput(this.label);
     this.input1.position(this.x, this.y);
     this.input1.size(300, this.h);
@@ -205,7 +202,8 @@ class DraggableRect {
       labels[this.index] = this.label;
     });
 
-    this.input2 = createInput(this.label2);
+    // Second input starts empty
+    this.input2 = createInput("");
     this.input2.position(this.x + 400, this.y);
     this.input2.size(500, this.h + 100);
     this.input2.style('font-family', 'Courier Prime');
@@ -215,6 +213,40 @@ class DraggableRect {
       this.label2 = this.input2.value();
       labels2[this.index] = this.label2;
     });
+
+    // Delete button
+    this.deleteBtn = createButton("Delete");
+    this.deleteBtn.style('font-family', 'Courier Prime');
+    this.deleteBtn.style('font-size', '14px');
+    this.deleteBtn.style('background-color', '#cc0000');
+    this.deleteBtn.style('color', 'white');
+    this.deleteBtn.style('padding', '4px 10px');
+    this.deleteBtn.style('border-radius', '8px');
+    this.deleteBtn.mousePressed(() => {
+      rectangles.splice(this.index, 1);
+      labels.splice(this.index, 1);
+      labels2.splice(this.index, 1);
+
+      rectangles.forEach((r, i) => r.index = i);
+
+      this.input1.remove();
+      this.input2.remove();
+      this.deleteBtn.remove();
+      this.generateBtn.remove();
+    });
+
+    // Generate button
+    this.generateBtn = createButton("Generate");
+    this.generateBtn.style('font-family', 'Courier Prime');
+    this.generateBtn.style('font-size', '14px');
+    this.generateBtn.style('background-color', '#0066cc');
+    this.generateBtn.style('color', 'white');
+    this.generateBtn.style('padding', '4px 10px');
+    this.generateBtn.style('border-radius', '8px');
+    this.generateBtn.mousePressed(() => {
+      this.input2.value(labels2[this.index]);
+      this.label2 = labels2[this.index];
+    });
   }
 
   update() {
@@ -223,11 +255,15 @@ class DraggableRect {
     }
     this.input1.position(this.x, this.y);
     this.input2.position(this.x + 400, this.y);
+    this.deleteBtn.position(this.x + 150, this.y + 80);
+    this.generateBtn.position(this.x + 250, this.y + 80);
   }
 
   show() {
     this.input1.show();
     this.input2.show();
+    this.deleteBtn.show();
+    this.generateBtn.show();
   }
 
   isMouseOver() {
