@@ -38,16 +38,17 @@ let inputBox, inputBox2;
 let sendButton, sendButton2;
 
 function preload() {
-  myFont = loadFont('Website/typewcond_bold.otf');
-  bgImg = loadImage('Website/background.png');
-  typewriterImg = loadImage('Website/typewriter.png');
+  myFont = loadFont('typewcond_bold.otf');
+  bgImg = loadImage('background.png');
+  typewriterImg = loadImage('typewriter.png');
 }
 
 function setup() {
   createCanvas(1700, 3250);
 
+
   inputBox = createInput();
-  inputBox.position(350, 220);
+  inputBox.position(450, 300);
   inputBox.size(450, 100);
   inputBox.style('height', '100px');
   inputBox.style('font-size', '16px');
@@ -58,14 +59,18 @@ function setup() {
   
 
   sendButton = createButton('Send');
-  sendButton.position(inputBox.x + inputBox.width -50, inputBox.y + 45);
+  sendButton.position(inputBox.x + inputBox.width -80, inputBox.y + 35);
   sendButton.style('font-family', 'Courier Prime');
+  sendButton.style('font-size', '18px');       
+  sendButton.style('background-color', 'black'); 
+  sendButton.style('color', 'white');         
+  sendButton.style('padding', '8px 16px');
+  sendButton.style('border-radius', '8px');
   sendButton.mousePressed(logPrompt);
-  
 
   inputBox2 = createInput();
-  inputBox2.position(350 + 600, 220);
-  inputBox2.size(180, 100);
+  inputBox2.position(inputBox.x + 600,inputBox.y);
+  inputBox2.size(220, 100);
   inputBox2.style('height', '100px');
   inputBox2.style('border-radius', '12px');
   inputBox2.style('background-color', 'rgba(212, 185, 94)');
@@ -75,10 +80,14 @@ function setup() {
 
 
   sendButton2 = createButton('Send');
-  sendButton2.position(inputBox2.x + inputBox2.width + 10, inputBox2.y + 35);
-  sendButton2.position(inputBox2.x + inputBox2.width -50, inputBox2.y + 45);
+  sendButton2.position(inputBox2.x + inputBox2.width -80, inputBox2.y + 35);
   sendButton2.mousePressed(logWords);
   sendButton2.style('font-family', 'Courier Prime');
+  sendButton2.style('font-size', '18px');       
+  sendButton2.style('background-color', 'black'); 
+  sendButton2.style('color', 'white');         
+  sendButton2.style('padding', '8px 16px');
+  sendButton2.style('border-radius', '8px');
 
   for (let i = 0; i < labels.length; i++) {
     rectangles.push(new DraggableRect(50, 350 + i * 80 + 200, 250, 70, labels[i], labels2[i], i));
@@ -93,11 +102,11 @@ function draw() {
   fill(0);
   textSize(120);
   textAlign(CENTER, TOP);
-  text("ESSAY WRITER", width / 2, 20);
+  text("ESSAY WRITER", width / 2, 60);
   textSize(24);
 image(typewriterImg, 200, 40, 250, 180);
 
-  fill(100, 200, 100);
+  fill(157,174,17);
   rect(buttonX, buttonY, buttonW, buttonH, 5);
   fill(0);
   textAlign(CENTER, CENTER);
@@ -182,7 +191,7 @@ function mouseReleased() {
         labels_hold.push(draggingRect.label);
         labels.splice(index, 1);
         labels2.splice(index, 1);
-        draggingRect.x = 410;
+        draggingRect.x = 1200;
         draggingRect.y = 400 + 200 + heldRectangles.length * 80;
         heldRectangles.push(draggingRect);
         rectangles.splice(index, 1);
@@ -206,7 +215,11 @@ function mouseReleased() {
           heldRectangles.splice(heldRectangles.indexOf(draggingRect), 1);
         }
       }
-    }
+      
+    } else { 
+  // Snap it back to the main column's x position
+  draggingRect.x = 50; // <-- Same x as other rectangles
+}
 
     draggingRect = null;
   }
@@ -248,6 +261,8 @@ class DraggableRect {
     this.input1.position(this.x, this.y);
     this.input1.size(300, this.h);
     this.input1.style('font-family', 'Courier Prime');
+    this.input1.style('background-color', 'rgb(245, 237, 214)');
+this.input1.style('border-radius', '10px');
     this.input1.input(() => {
       this.label = this.input1.value();
       labels[this.index] = this.label;
@@ -257,6 +272,8 @@ class DraggableRect {
     this.input2.position(this.x + 400, this.y);
     this.input2.size(500, this.h + 100);
     this.input2.style('font-family', 'Courier Prime');
+    this.input2.style('background-color', 'rgb(245, 237, 214)');
+this.input2.style('border-radius', '10px');
     this.input2.input(() => {
       this.label2 = this.input2.value();
       labels2[this.index] = this.label2;
