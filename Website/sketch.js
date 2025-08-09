@@ -2,13 +2,6 @@ let labels = [
   'Step 1: Define Your Theme',
   'Step 2: Research and Gather Inspiration',
   'Step 3: Outline Content and Structure',
-  'Step 4: Collect Visual and Written Content',
-  'Step 5: Choose a Layout and Design Tool',
-  'Step 6: Create a Mockup',
-  'Step 7: Finalize the Layout and Content',
-  'Step 8: Proofread and Edit',
-  'Step 9: Print or Digitize Your Zine',
-  'Step 10: Distribute Your Zine'
 ];
 
 // Start labels2 empty
