@@ -11,13 +11,14 @@ let labels = [
   'Step 10: Distribute Your Zine'
 ];
 
-let labels2 = [...labels];
+// Start labels2 empty
+let labels2 = Array(labels.length).fill(""); 
+
 let rectangles = [];
 let draggingRect = null;
 let offsetX, offsetY;
 
 let essayOutput, generateEssayBtn;
-
 let buttonX = 100, buttonY = 460, buttonW = 200, buttonH = 50;
 
 let colors = ['#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff', '#eecbff', '#dbdcff'];
@@ -29,6 +30,7 @@ let mainTheme = [];
 let words = [];
 let inputBox, inputBox2;
 let sendButton, sendButton2;
+let myFont;
 
 function preload() {
   myFont = loadFont('Website/typewcond_bold.otf');
@@ -95,23 +97,25 @@ function setup() {
   sendButton2.style('border-radius', '8px');
   
   generateEssayBtn = createButton("Generate Essay");
-  generateEssayBtn.position(1200, 500);
+  generateEssayBtn.position(1200, 550);
   generateEssayBtn.style('font-family', 'Courier Prime');
   generateEssayBtn.style('font-size', '18px');
   generateEssayBtn.style('background-color', '#006600');
   generateEssayBtn.style('color', 'white');
   generateEssayBtn.style('padding', '8px 16px');
   generateEssayBtn.style('border-radius', '8px');
+  generateEssayBtn.style('width', '200px');  
+  generateEssayBtn.style('height', '50px');
   generateEssayBtn.mousePressed(generateEssay);
 
-  // Create essay preview box
   essayOutput = createElement('textarea');
-  essayOutput.position(1200, 550);
-  essayOutput.size(400, 600);
+  essayOutput.position(1000, 650);
+  essayOutput.size(600, 1000);
   essayOutput.style('font-family', 'Courier Prime');
   essayOutput.style('font-size', '16px');
   essayOutput.style('background-color', 'rgb(245, 237, 214)');
   essayOutput.style('border-radius', '10px');
+  essayOutput.style('padding', '25px');
   essayOutput.attribute('readonly', '');
 
   for (let i = 0; i < labels.length; i++) {
@@ -170,10 +174,10 @@ function mousePressed() {
   if (!clickedOnRect && isButtonClicked()) {
     let newLabel = prompt("Enter the label for the new item:");
     if (newLabel && newLabel.trim() !== "") {
-      let newRect = new DraggableRect(50, 350 + rectangles.length * 200 + 200, 250, 70, newLabel.trim(), newLabel.trim(), labels.length);
+      let newRect = new DraggableRect(50, 350 + rectangles.length * 200 + 200, 250, 70, newLabel.trim(), "", labels.length);
       rectangles.push(newRect);
       labels.push(newLabel.trim());
-      labels2.push(newLabel.trim());
+      labels2.push("");
     } else {
       alert("Invalid label. Item was not added.");
     }
@@ -212,7 +216,6 @@ class DraggableRect {
     this.color = random(colors);
     this.index = index;
 
-    // First input
     this.input1 = createInput(this.label);
     this.input1.position(this.x, this.y);
     this.input1.size(300, this.h);
@@ -224,7 +227,6 @@ class DraggableRect {
       labels[this.index] = this.label;
     });
 
-    // Second input starts empty
     this.input2 = createInput("");
     this.input2.position(this.x + 400, this.y);
     this.input2.size(450, this.h + 100);
@@ -236,7 +238,6 @@ class DraggableRect {
       labels2[this.index] = this.label2;
     });
 
-    // Delete button
     this.deleteBtn = createButton("Delete");
     this.deleteBtn.style('font-family', 'Courier Prime');
     this.deleteBtn.style('font-size', '14px');
@@ -257,7 +258,6 @@ class DraggableRect {
       this.generateBtn.remove();
     });
 
-    // Generate button
     this.generateBtn = createButton("Generate");
     this.generateBtn.style('font-family', 'Courier Prime');
     this.generateBtn.style('font-size', '14px');
@@ -266,6 +266,7 @@ class DraggableRect {
     this.generateBtn.style('padding', '4px 10px');
     this.generateBtn.style('border-radius', '8px');
     this.generateBtn.mousePressed(() => {
+      labels2[this.index] = this.input1.value(); 
       this.input2.value(labels2[this.index]);
       this.label2 = labels2[this.index];
     });
@@ -311,12 +312,9 @@ function logWords() {
 }
 
 function generateEssay() {
-  // Combine all input2 values as paragraphs
   let paragraphs = labels2
     .map(text => text.trim())
     .filter(text => text.length > 0)
-    .map(text => text) // already strings
-    .join("\n\n"); // paragraph spacing
-
+    .join("\n\n");
   essayOutput.value(paragraphs);
 }
