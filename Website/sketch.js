@@ -16,6 +16,8 @@ let rectangles = [];
 let draggingRect = null;
 let offsetX, offsetY;
 
+let essayOutput, generateEssayBtn;
+
 let buttonX = 100, buttonY = 460, buttonW = 200, buttonH = 50;
 
 let colors = ['#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff', '#eecbff', '#dbdcff'];
@@ -91,6 +93,26 @@ function setup() {
   sendButton2.style('color', 'white');
   sendButton2.style('padding', '8px 16px');
   sendButton2.style('border-radius', '8px');
+  
+  generateEssayBtn = createButton("Generate Essay");
+  generateEssayBtn.position(1200, 500);
+  generateEssayBtn.style('font-family', 'Courier Prime');
+  generateEssayBtn.style('font-size', '18px');
+  generateEssayBtn.style('background-color', '#006600');
+  generateEssayBtn.style('color', 'white');
+  generateEssayBtn.style('padding', '8px 16px');
+  generateEssayBtn.style('border-radius', '8px');
+  generateEssayBtn.mousePressed(generateEssay);
+
+  // Create essay preview box
+  essayOutput = createElement('textarea');
+  essayOutput.position(1200, 550);
+  essayOutput.size(400, 600);
+  essayOutput.style('font-family', 'Courier Prime');
+  essayOutput.style('font-size', '16px');
+  essayOutput.style('background-color', 'rgb(245, 237, 214)');
+  essayOutput.style('border-radius', '10px');
+  essayOutput.attribute('readonly', '');
 
   for (let i = 0; i < labels.length; i++) {
     rectangles.push(new DraggableRect(50, 350 + i * 200 + 200, 250, 70, labels[i], labels2[i], i));
@@ -205,7 +227,7 @@ class DraggableRect {
     // Second input starts empty
     this.input2 = createInput("");
     this.input2.position(this.x + 400, this.y);
-    this.input2.size(500, this.h + 100);
+    this.input2.size(450, this.h + 100);
     this.input2.style('font-family', 'Courier Prime');
     this.input2.style('background-color', 'rgb(245, 237, 214)');
     this.input2.style('border-radius', '10px');
@@ -286,4 +308,15 @@ function logPrompt() {
 
 function logWords() {
   console.log(words);
+}
+
+function generateEssay() {
+  // Combine all input2 values as paragraphs
+  let paragraphs = labels2
+    .map(text => text.trim())
+    .filter(text => text.length > 0)
+    .map(text => text) // already strings
+    .join("\n\n"); // paragraph spacing
+
+  essayOutput.value(paragraphs);
 }
