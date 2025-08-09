@@ -42,7 +42,7 @@ function setup() {
   indText.style('color', 'black');
   indText.style('margin', '0');
 
-  let indText2 = createP("How many words?:");
+  let indText2 = createP("How many words?");
   indText2.position(1080, 260);
   indText2.style('font-family', 'Courier Prime');
   indText2.style('font-size', '16px');
