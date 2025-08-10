@@ -2,13 +2,6 @@ let labels = [
   'Step 1: Define Your Theme',
   'Step 2: Research and Gather Inspiration',
   'Step 3: Outline Content and Structure',
-  'Step 4: Collect Visual and Written Content',
-  'Step 5: Choose a Layout and Design Tool',
-  'Step 6: Create a Mockup',
-  'Step 7: Finalize the Layout and Content',
-  'Step 8: Proofread and Edit',
-  'Step 9: Print or Digitize Your Zine',
-  'Step 10: Distribute Your Zine'
 ];
 
 let labels2 = Array(labels.length).fill(""); 
@@ -30,9 +23,7 @@ let inputBox, inputBox2;
 let sendButton, sendButton2;
 let myFont;
 
-// --- New variables for advice button/audio ---
-let getAdviceBtn;
-let adviceAudio;
+let welcomeAudio;
 let showGif = false;
 
 function preload() {
@@ -41,7 +32,7 @@ function preload() {
   typewriterImg = loadImage('Website/typewriter.png');
   taskantImg = loadImage('Website/taskant.png');
   taskantGif = loadImage('Website/taskant.gif');
-  adviceAudio = loadSound('Website/audio.mp3');
+  welcomeAudio = loadSound('Website/welcome.mp3');
 }
 
 function setup() {
@@ -49,68 +40,37 @@ function setup() {
 
   let indText = createP("What is your essay about?");
   indText.position(480, 260);
-  indText.style('font-family', 'Courier Prime');
-  indText.style('font-size', '16px');
-  indText.style('color', 'black');
-  indText.style('margin', '0');
-  indText.style('white-space', 'nowrap');
+  styleText(indText);
 
   let indText2 = createP("How many words?:");
   indText2.position(1080, 260);
-  indText2.style('font-family', 'Courier Prime');
-  indText2.style('font-size', '16px');
-  indText2.style('color', 'black');
-  indText2.style('white-space', 'nowrap');
-  indText2.style('margin', '0');
+  styleText(indText2);
 
   inputBox = createInput();
   inputBox.position(450, 300);
   inputBox.size(450, 100);
-  inputBox.style('height', '100px');
-  inputBox.style('font-size', '16px');
-  inputBox.style('border-radius', '12px');
-  inputBox.style('background-color', 'rgba(212, 185, 94)');
+  styleInput(inputBox);
   inputBox.input(updatePrompt);
-  inputBox.style('font-family', 'Courier Prime');
 
   sendButton = createButton('Send');
   sendButton.position(inputBox.x + inputBox.width - 80, inputBox.y + 35);
-  sendButton.style('font-family', 'Courier Prime');
-  sendButton.style('font-size', '18px');
-  sendButton.style('background-color', 'black');
-  sendButton.style('color', 'white');
-  sendButton.style('padding', '8px 16px');
-  sendButton.style('border-radius', '8px');
+  styleButton(sendButton, 'black', 'white');
   sendButton.mousePressed(logPrompt);
 
   inputBox2 = createInput();
   inputBox2.position(inputBox.x + 600, inputBox.y);
   inputBox2.size(220, 100);
-  inputBox2.style('height', '100px');
-  inputBox2.style('border-radius', '12px');
-  inputBox2.style('background-color', 'rgba(212, 185, 94)');
-  inputBox2.style('font-size', '16px');
+  styleInput(inputBox2);
   inputBox2.input(updateWords);
-  inputBox2.style('font-family', 'Courier Prime');
 
   sendButton2 = createButton('Send');
   sendButton2.position(inputBox2.x + inputBox2.width - 80, inputBox2.y + 35);
+  styleButton(sendButton2, 'black', 'white');
   sendButton2.mousePressed(logWords);
-  sendButton2.style('font-family', 'Courier Prime');
-  sendButton2.style('font-size', '18px');
-  sendButton2.style('background-color', 'black');
-  sendButton2.style('color', 'white');
-  sendButton2.style('padding', '8px 16px');
-  sendButton2.style('border-radius', '8px');
-  
+
   generateEssayBtn = createButton("Generate Essay");
   generateEssayBtn.position(1200, 550);
-  generateEssayBtn.style('font-family', 'Courier Prime');
-  generateEssayBtn.style('font-size', '18px');
-  generateEssayBtn.style('background-color', '#006600');
-  generateEssayBtn.style('color', 'white');
-  generateEssayBtn.style('padding', '8px 16px');
-  generateEssayBtn.style('border-radius', '8px');
+  styleButton(generateEssayBtn, '#006600', 'white');
   generateEssayBtn.style('width', '200px');  
   generateEssayBtn.style('height', '50px');
   generateEssayBtn.mousePressed(generateEssay);
@@ -124,18 +84,6 @@ function setup() {
   essayOutput.style('border-radius', '10px');
   essayOutput.style('padding', '25px');
   essayOutput.attribute('readonly', '');
-
-  // --- New Get Advice button ---
-  getAdviceBtn = createButton("Get Advice");
-  getAdviceBtn.position(1390, 340); // right below taskantImg
-  getAdviceBtn.style('font-family', 'Courier Prime');
-  getAdviceBtn.style('font-size', '18px');
-  getAdviceBtn.style('background-color', '#333');
-  getAdviceBtn.style('color', 'white');
-  getAdviceBtn.style('padding', '8px 16px');
-  getAdviceBtn.style('border-radius', '8px');
-  getAdviceBtn.size(200, 40);
-  getAdviceBtn.mousePressed(playAdvice);
 
   for (let i = 0; i < labels.length; i++) {
     rectangles.push(new DraggableRect(50, 350 + i * 200 + 200, 250, 70, labels[i], labels2[i], i));
@@ -153,10 +101,10 @@ function draw() {
   textSize(24);
   image(typewriterImg, 200, 40, 250, 180);
 
-  // Static taskant image
+  // Static image
   image(taskantImg, 1335, 40, 315, 300);
 
-  // Show gif only if playing audio
+  // GIF while audio plays
   if (showGif) {
     image(taskantGif, 1400, 62, 175, 255);
   }
@@ -175,17 +123,17 @@ function draw() {
   reorderRectangles();
 }
 
-function playAdvice() {
-  if (!adviceAudio.isPlaying()) {
+function mousePressed() {
+  // Start audio on first click
+  if (!welcomeAudio.isPlaying() && getAudioContext().state !== 'running') {
+    userStartAudio();
     showGif = true;
-    adviceAudio.play();
-    adviceAudio.onended(() => {
+    welcomeAudio.play();
+    welcomeAudio.onended(() => {
       showGif = false;
     });
   }
-}
 
-function mousePressed() {
   let clickedOnRect = false;
   let currentTime = millis();
 
@@ -256,9 +204,7 @@ class DraggableRect {
     this.input1 = createInput(this.label);
     this.input1.position(this.x, this.y);
     this.input1.size(300, this.h);
-    this.input1.style('font-family', 'Courier Prime');
-    this.input1.style('background-color', 'rgb(245, 237, 214)');
-    this.input1.style('border-radius', '10px');
+    styleInput(this.input1);
     this.input1.input(() => {
       this.label = this.input1.value();
       labels[this.index] = this.label;
@@ -267,28 +213,19 @@ class DraggableRect {
     this.input2 = createInput("");
     this.input2.position(this.x + 400, this.y);
     this.input2.size(450, this.h + 100);
-    this.input2.style('font-family', 'Courier Prime');
-    this.input2.style('background-color', 'rgb(245, 237, 214)');
-    this.input2.style('border-radius', '10px');
+    styleInput(this.input2);
     this.input2.input(() => {
       this.label2 = this.input2.value();
       labels2[this.index] = this.label2;
     });
 
     this.deleteBtn = createButton("Delete");
-    this.deleteBtn.style('font-family', 'Courier Prime');
-    this.deleteBtn.style('font-size', '14px');
-    this.deleteBtn.style('background-color', '#cc0000');
-    this.deleteBtn.style('color', 'white');
-    this.deleteBtn.style('padding', '4px 10px');
-    this.deleteBtn.style('border-radius', '8px');
+    styleButton(this.deleteBtn, '#cc0000', 'white', 14);
     this.deleteBtn.mousePressed(() => {
       rectangles.splice(this.index, 1);
       labels.splice(this.index, 1);
       labels2.splice(this.index, 1);
-
       rectangles.forEach((r, i) => r.index = i);
-
       this.input1.remove();
       this.input2.remove();
       this.deleteBtn.remove();
@@ -296,12 +233,7 @@ class DraggableRect {
     });
 
     this.generateBtn = createButton("Generate");
-    this.generateBtn.style('font-family', 'Courier Prime');
-    this.generateBtn.style('font-size', '14px');
-    this.generateBtn.style('background-color', '#0066cc');
-    this.generateBtn.style('color', 'white');
-    this.generateBtn.style('padding', '4px 10px');
-    this.generateBtn.style('border-radius', '8px');
+    styleButton(this.generateBtn, '#0066cc', 'white', 14);
     this.generateBtn.mousePressed(() => {
       labels2[this.index] = this.input1.value(); 
       this.input2.value(labels2[this.index]);
@@ -354,4 +286,30 @@ function generateEssay() {
     .filter(text => text.length > 0)
     .join("\n\n");
   essayOutput.value(paragraphs);
+}
+
+// --- Helpers ---
+function styleText(el) {
+  el.style('font-family', 'Courier Prime');
+  el.style('font-size', '16px');
+  el.style('color', 'black');
+  el.style('margin', '0');
+  el.style('white-space', 'nowrap');
+}
+
+function styleInput(el) {
+  el.style('height', '100px');
+  el.style('font-size', '16px');
+  el.style('border-radius', '12px');
+  el.style('background-color', 'rgba(212, 185, 94)');
+  el.style('font-family', 'Courier Prime');
+}
+
+function styleButton(btn, bg, fg, size=18) {
+  btn.style('font-family', 'Courier Prime');
+  btn.style('font-size', `${size}px`);
+  btn.style('background-color', bg);
+  btn.style('color', fg);
+  btn.style('padding', '8px 16px');
+  btn.style('border-radius', '8px');
 }
