@@ -2,11 +2,16 @@ let labels = [
   'Step 1: Define Your Theme',
   'Step 2: Research and Gather Inspiration',
   'Step 3: Outline Content and Structure',
+  'Step 4: Collect Visual and Written Content',
+  'Step 5: Choose a Layout and Design Tool',
+  'Step 6: Create a Mockup',
+  'Step 7: Finalize the Layout and Content',
+  'Step 8: Proofread and Edit',
+  'Step 9: Print or Digitize Your Zine',
+  'Step 10: Distribute Your Zine'
 ];
 
-// Start labels2 empty
 let labels2 = Array(labels.length).fill(""); 
-
 let rectangles = [];
 let draggingRect = null;
 let offsetX, offsetY;
@@ -18,18 +23,25 @@ let colors = ['#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff', '#eecbff', 
 let lastClickTime = 0;
 let doubleClickThreshold = 300;
 
-let bgImg, typewriterImg, taskant;
+let bgImg, typewriterImg, taskantImg, taskantGif;
 let mainTheme = [];
 let words = [];
 let inputBox, inputBox2;
 let sendButton, sendButton2;
 let myFont;
 
+// --- New variables for advice button/audio ---
+let getAdviceBtn;
+let adviceAudio;
+let showGif = false;
+
 function preload() {
   myFont = loadFont('Website/typewcond_bold.otf');
   bgImg = loadImage('Website/background.png');
   typewriterImg = loadImage('Website/typewriter.png');
   taskantImg = loadImage('Website/taskant.png');
+  taskantGif = loadImage('Website/taskant.gif');
+  adviceAudio = loadSound('Website/audio.mp3');
 }
 
 function setup() {
@@ -41,8 +53,9 @@ function setup() {
   indText.style('font-size', '16px');
   indText.style('color', 'black');
   indText.style('margin', '0');
+  indText.style('white-space', 'nowrap');
 
-  let indText2 = createP("How many words?");
+  let indText2 = createP("How many words?:");
   indText2.position(1080, 260);
   indText2.style('font-family', 'Courier Prime');
   indText2.style('font-size', '16px');
@@ -112,6 +125,18 @@ function setup() {
   essayOutput.style('padding', '25px');
   essayOutput.attribute('readonly', '');
 
+  // --- New Get Advice button ---
+  getAdviceBtn = createButton("Get Advice");
+  getAdviceBtn.position(1390, 340); // right below taskantImg
+  getAdviceBtn.style('font-family', 'Courier Prime');
+  getAdviceBtn.style('font-size', '18px');
+  getAdviceBtn.style('background-color', '#333');
+  getAdviceBtn.style('color', 'white');
+  getAdviceBtn.style('padding', '8px 16px');
+  getAdviceBtn.style('border-radius', '8px');
+  getAdviceBtn.size(200, 40);
+  getAdviceBtn.mousePressed(playAdvice);
+
   for (let i = 0; i < labels.length; i++) {
     rectangles.push(new DraggableRect(50, 350 + i * 200 + 200, 250, 70, labels[i], labels2[i], i));
   }
@@ -127,7 +152,14 @@ function draw() {
   text("ESSAY WRITER", width / 2, 60);
   textSize(24);
   image(typewriterImg, 200, 40, 250, 180);
-  image(taskantImg, 1300, 40, 250, 200);
+
+  // Static taskant image
+  image(taskantImg, 1335, 40, 315, 300);
+
+  // Show gif only if playing audio
+  if (showGif) {
+    image(taskantGif, 1400, 62, 175, 255);
+  }
 
   fill(157, 174, 17);
   rect(buttonX, buttonY, buttonW, buttonH, 5);
@@ -141,6 +173,16 @@ function draw() {
   }
 
   reorderRectangles();
+}
+
+function playAdvice() {
+  if (!adviceAudio.isPlaying()) {
+    showGif = true;
+    adviceAudio.play();
+    adviceAudio.onended(() => {
+      showGif = false;
+    });
+  }
 }
 
 function mousePressed() {
